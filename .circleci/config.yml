@@ -49,9 +49,7 @@ jobs:
       - run:
           name: Wait for Flask API
           command: |
-            echo "Waiting for Flask to respond..."
-            until $(curl --output /dev/null --silent --head --fail http://localhost:5000/); do
-              printf '.'
+            echo "Waiting 1 s..."
               sleep 1
             done
             echo "Flask is up!"

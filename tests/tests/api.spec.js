@@ -13,7 +13,7 @@ let apiContext;
 
 test.beforeAll(async ({ playwright }) => {
   apiContext = await playwright.request.newContext({
-    baseURL: 'http://127.0.0.1:5000',
+    baseURL: 'http://backend:5000',
     extraHTTPHeaders: {
       'Accept': 'application/json',
     },

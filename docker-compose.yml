@@ -21,6 +21,7 @@ services:
   backend:
     build:
       context: ./backend # Path to your Flask source and Dockerfile
+    container_name: backend
     ports:
       - "5000:5000"
     environment:
@@ -30,6 +31,7 @@ services:
   tests:
     build:
       context: ./tests # Path to your JS/Playwright source and Dockerfile
+    container_name: tests
     environment:
       # Tell Playwright to look for the backend using the service name container link
       - BASE_URL=http://backend:5000 
