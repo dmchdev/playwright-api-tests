@@ -57,7 +57,10 @@ jobs:
       # --abort-on-container-exit ensures CircleCI gets the proper exit code from your tests
       - run:
           name: Execute Playwright Tests
-          command: docker-compose up --abort-on-container-exit tests
+          command: |
+            cd tests
+            docker build -t tests .
+            docker run -d -p 5000:5000 npx playwright test
 
       # 5. Clean up containers (Optional but good practice)
       - run:
