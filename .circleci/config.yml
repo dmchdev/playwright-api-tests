@@ -6,17 +6,15 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build images of services declared in docker-compose.yml
-          command: docker compose build
+          name: "Backend"
+          command: |
+            docker build -t backend ./backend
+            docker run -p 5000:5000 backend
       - run:
           name: "Run Tests"
           command: |
-            docker run backend
-            docker run api_tests npx playwright test 
-      - run:
-          name: "Cleanup"
-          command: |
-            docker compose down
+            cd tests
+            npx playwright test
 
 workflows:
   run-tests-workflow:

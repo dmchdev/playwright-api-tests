@@ -5,3 +5,5 @@ COPY package-lock.json /
 COPY playwright.config.js /
 
 RUN npm ci && npx playwright install --with-deps && npm install nock && npm install ajv
+
+CMD ["npx", "playwright", "test"]
