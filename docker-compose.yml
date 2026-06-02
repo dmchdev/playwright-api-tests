@@ -1,15 +1,37 @@
-version: '3'
-services:
+# version: '3'
+# services:
 
+#   backend:
+#     build: ./backend
+#     ports:
+#       - "5000:5000"
+#     container_name: backend
+
+#   tests:
+#     build: ./tests
+#     container_name: tests
+#     depends_on:
+#       backend:
+#         condition: service_started
+
+version: '3.8'
+
+services:
+  # The Flask Back-end Service
   backend:
-    build: ./backend
+    build:
+      context: ./backend # Path to your Flask source and Dockerfile
     ports:
       - "5000:5000"
-    container_name: backend
+    environment:
+      - FLASK_ENV=development
 
-  # tests:
-  #   build: ./tests
-  #   container_name: tests
-  #   depends_on:
-  #     backend:
-  #       condition: service_started
+  # The Playwright Test Runner Service
+  tests:
+    build:
+      context: ./tests # Path to your JS/Playwright source and Dockerfile
+    environment:
+      # Tell Playwright to look for the backend using the service name container link
+      - BASE_URL=http://backend:5000 
+    depends_on:
+      - backend

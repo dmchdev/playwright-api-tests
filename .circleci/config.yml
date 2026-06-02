@@ -1,25 +1,74 @@
+# version: 2.1
+# jobs:
+#   run-tests:
+#     machine: 
+#       image: ubuntu-2204:current
+#     steps:
+#       - checkout
+#       - run:
+#           name: "Backend"
+#           command: |
+#             docker build -t backend ./backend
+#             docker run -d  -p 5000:5000 backend
+#       - run:
+#           name: "Run Tests"
+#           command: |
+#             cd tests
+#             npm install playwright
+#             npm install ajv
+#             npm install nock
+#             npx playwright test
+
+# workflows:
+#   run-tests-workflow:
+#     jobs:
+#       - run-tests
+
 version: 2.1
+
 jobs:
-  run-tests:
-    machine: 
-      image: ubuntu-2204:current
+  build-and-test:
+    machine:
+      image: ubuntu-2204:current # Native Docker & Compose support
     steps:
       - checkout
+
+      # 1. Build both Docker images dynamically from source code
+      # This looks at the 'build:' contexts defined in docker-compose.yml
       - run:
-          name: "Backend"
-          command: |
-            docker build -t backend ./backend
-            docker run -d  -p 5000:5000 backend
+          name: Build Application Images
+          command: docker-compose build
+
+      # 2. Spin up the Flask back-end in the background
       - run:
-          name: "Run Tests"
+          name: Start Flask Backend
+          command: docker-compose up -d backend
+
+      # 3. Wait for Flask to be fully ready before firing Playwright
+      # This prevents Playwright from failing due to connection timeouts
+      - run:
+          name: Wait for Flask API
           command: |
-            cd tests
-            npm install playwright
-            npm install ajv
-            npm install nock
-            npx playwright test
+            echo "Waiting for Flask to respond..."
+            until $(curl --output /dev/null --silent --head --fail http://localhost:5000/); do
+              printf '.'
+              sleep 1
+            done
+            echo "Flask is up!"
+
+      # 4. Run the Playwright tests
+      # --abort-on-container-exit ensures CircleCI gets the proper exit code from your tests
+      - run:
+          name: Execute Playwright Tests
+          command: docker-compose up --abort-on-container-exit tests
+
+      # 5. Clean up containers (Optional but good practice)
+      - run:
+          name: Cleanup Containers
+          command: docker-compose down
+          when: always
 
 workflows:
-  run-tests-workflow:
+  e2e-pipeline:
     jobs:
-      - run-tests
+      - build-and-test
