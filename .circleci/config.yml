@@ -60,7 +60,7 @@ jobs:
           command: |
             cd tests
             docker build -t tests .
-            docker run -d -p 5000:5000 npx playwright test
+            docker run -d --network host npx playwright test
 
       # 5. Clean up containers (Optional but good practice)
       - run:
