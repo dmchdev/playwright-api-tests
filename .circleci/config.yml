@@ -50,8 +50,7 @@ jobs:
           name: Wait for Flask API
           command: |
             echo "Waiting 1 s..."
-              sleep 1
-            done
+            sleep 1
             echo "Flask is up!"
 
       # 4. Run the Playwright tests
