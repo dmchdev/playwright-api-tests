@@ -1,0 +1,23 @@
+version: 2.1
+jobs:
+  run-tests:
+    machine: 
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run:
+          name: Build images of services declared in docker-compose.yml
+          command: docker compose build
+      - run:
+          name: "Run Tests"
+          command: |
+            docker run api_tests npx playwright test 
+      - run:
+          name: "Cleanup"
+          command: |
+            docker compose down
+
+workflows:
+  run-tests-workflow:
+    jobs:
+      - run-tests
