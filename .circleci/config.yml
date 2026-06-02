@@ -11,6 +11,7 @@ jobs:
       - run:
           name: "Run Tests"
           command: |
+            docker run backend
             docker run api_tests npx playwright test 
       - run:
           name: "Cleanup"
